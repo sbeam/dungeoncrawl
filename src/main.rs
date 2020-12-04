@@ -6,27 +6,27 @@ mod spawner;
 mod systems;
 
 pub mod prelude {
+    pub use crate::camera::*;
+    pub use crate::components::*;
+    pub use crate::map::*;
+    pub use crate::map_builder::*;
+    pub use crate::spawner::*;
+    pub use crate::systems::*;
     pub use bracket_lib::prelude::*;
     pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
-    pub const SCREEN_WIDTH: i32 = 80;
-    pub const SCREEN_HEIGHT: i32 = 50;
-    pub use crate::components::*;
-    pub use crate::map::*;
-    pub use crate::map_builder::*;
     pub const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
-    pub use crate::camera::*;
-    pub use crate::spawner::*;
-    pub use crate::systems::*; 
+    pub const SCREEN_WIDTH: i32 = 80;
+    pub const SCREEN_HEIGHT: i32 = 50;
 }
 
 use prelude::*;
 
 struct State {
     world: World,
-    systems: Schedule, 
+    systems: Schedule,
     resources: Resources,
 }
 
@@ -36,7 +36,7 @@ impl State {
         let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
         let mb = MapBuilder::build(&mut rng);
-        spawn_player(&mut world, mb.player_start); 
+        spawn_player(&mut world, mb.player_start);
         resources.insert(mb.map);
         resources.insert(Camera::new(mb.player_start));
 
@@ -51,11 +51,9 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(0);
-        ctx.cls();
-        ctx.set_active_console(1);
-        ctx.cls();
-        self.resources.insert(ctx.key); 
+        self.resources.insert(ctx.key);
         self.systems.execute(&mut self.world, &mut self.resources);
+        render_draw_buffer(ctx).expect("Rendering error");
     }
 }
 
