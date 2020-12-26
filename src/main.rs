@@ -41,7 +41,7 @@ impl State {
         mb.rooms
             .iter()
             .skip(1)
-            .map( |r| r.center() )
+            .map(|r| r.center())
             .for_each(|pos| spawn_monster(&mut world, &mut rng, pos));
 
         resources.insert(mb.map);
