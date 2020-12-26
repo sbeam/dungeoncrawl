@@ -37,6 +37,13 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let mb = MapBuilder::build(&mut rng);
         spawn_player(&mut world, mb.player_start);
+
+        mb.rooms
+            .iter()
+            .skip(1)
+            .map( |r| r.center() )
+            .for_each(|pos| spawn_monster(&mut world, &mut rng, pos));
+
         resources.insert(mb.map);
         resources.insert(Camera::new(mb.player_start));
 
@@ -51,6 +58,10 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(0);
+        ctx.cls();
+        ctx.set_active_console(1);
+        ctx.cls();
+
         self.resources.insert(ctx.key);
         self.systems.execute(&mut self.world, &mut self.resources);
         render_draw_buffer(ctx).expect("Rendering error");

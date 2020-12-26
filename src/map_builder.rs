@@ -4,7 +4,7 @@ const NUM_ROOMS: usize = 20;
 pub struct MapBuilder {
     pub map: Map,
     pub player_start: Point,
-    rooms: Vec<Rect>,
+    pub rooms: Vec<Rect>,
 }
 
 impl MapBuilder {
