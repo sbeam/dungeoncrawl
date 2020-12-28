@@ -11,7 +11,7 @@ pub fn entity_render(world: &mut SubWorld, #[resource] camera: &mut Camera) {
     <(&Point, &Render)>::query()
         .iter(world)
         .for_each(|(pos, render)| {
-            println!("render: {:?}", render);
+            // println!("render: {:?}", render);
             draw_batch.set(*pos - offset, render.color, render.glyph);
         });
 
