@@ -17,7 +17,9 @@ pub fn combat(world: &mut SubWorld, commands: &mut CommandBuffer) {
             .unwrap()
             .get_component_mut::<Health>()
         {
-            health.current -= 1;
+            let mut rng = RandomNumberGenerator::new();
+
+            health.current -= rng.roll_dice(1, 5);
             if health.current < 1 {
                 println!("dead!");
                 commands.remove(*victim);
