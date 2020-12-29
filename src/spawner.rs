@@ -40,7 +40,7 @@ pub fn spawn_monster(world: &mut World, rng: &mut RandomNumberGenerator, pos: Po
 fn goblin() -> (i32, String, FontCharType, MonsterMovementType) {
     let mut rng = RandomNumberGenerator::new();
     (
-        1,
+        3,
         "Goblin".to_string(),
         to_cp437('g'),
         match rng.roll_dice(1, 6) {
@@ -52,7 +52,7 @@ fn goblin() -> (i32, String, FontCharType, MonsterMovementType) {
 
 fn orc() -> (i32, String, FontCharType, MonsterMovementType) {
     (
-        2,
+        7,
         "Orc".to_string(),
         to_cp437('o'),
         MonsterMovementType::Chasing,
