@@ -2,20 +2,24 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(Point)]
-#[read_component(MovingRandomly)]
+#[read_component(MonsterMovementType)]
 #[read_component(Health)]
 #[read_component(Player)]
 pub fn random_move(world: &SubWorld, commands: &mut CommandBuffer) {
-    let mut movers = <(Entity, &Point, &MovingRandomly)>::query();
+    let mut movers = <(Entity, &Point, &MonsterMovementType)>::query();
     let mut positions = <(Entity, &Point, &Health)>::query();
 
-    movers.iter(world).for_each(|(entity, pos, _)| {
-        // drunk derpy monsters
-        let mut rng = RandomNumberGenerator::new();
-        let destination = match rng.range(0, 4) {
-            0 => Point::new(-1, 0),
-            1 => Point::new(1, 0),
-            2 => Point::new(0, -1),
+    movers.iter(world).for_each(|(entity, pos, movement)| {
+        let destination = match movement {
+            MonsterMovementType::Drunk => {
+                let mut rng = RandomNumberGenerator::new();
+                match rng.range(0, 4) {
+                    0 => Point::new(-1, 0),
+                    1 => Point::new(1, 0),
+                    2 => Point::new(0, -1),
+                    _ => Point::new(0, 1),
+                }
+            }
             _ => Point::new(0, 1),
         } + *pos;
 

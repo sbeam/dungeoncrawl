@@ -61,9 +61,10 @@ pub fn player_input(
             if let Ok(mut health) = world
                 .entry_mut(player_entity)
                 .unwrap()
-                .get_component_mut::<Health>() {
-                    health.current = i32::min(health.max, health.current + 1);
-                }
+                .get_component_mut::<Health>()
+            {
+                health.current = i32::min(health.max, health.current + 1);
+            }
         }
     }
 }
