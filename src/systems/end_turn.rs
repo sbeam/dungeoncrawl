@@ -8,13 +8,12 @@ pub fn end_turn(world: &SubWorld, #[resource] turn_state: &mut TurnState) {
         .iter(world)
         .next();
 
-    let current_state = turn_state.clone();
-
-    let mut new_state = match current_state {
+    // due to Copy impl, de-referencing trivially makes a copy here (?)
+    let mut new_state = match *turn_state {
         TurnState::AwaitingInput => return,
         TurnState::PlayerTurn => TurnState::MonsterTurn,
         TurnState::MonsterTurn => TurnState::AwaitingInput,
-        _ => current_state,
+        _ => *turn_state,
     };
 
     if let Some(p) = player_hp {

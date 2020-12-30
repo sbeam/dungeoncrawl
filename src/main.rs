@@ -36,21 +36,7 @@ struct State {
 
 impl State {
     fn new() -> Self {
-        let mut world = World::default();
-        let mut resources = Resources::default();
-        let mut rng = RandomNumberGenerator::new();
-        let mb = MapBuilder::build(&mut rng);
-        spawn_player(&mut world, mb.player_start);
-
-        mb.rooms
-            .iter()
-            .skip(1)
-            .map(|r| r.center())
-            .for_each(|pos| spawn_monster(&mut world, &mut rng, pos));
-
-        resources.insert(mb.map);
-        resources.insert(Camera::new(mb.player_start));
-        resources.insert(TurnState::AwaitingInput);
+        let (world, resources) = Self::build();
 
         Self {
             world,
@@ -66,26 +52,30 @@ impl State {
         ctx.print_color_centered(2, RED, BLACK, "Your quest has ended.");
         ctx.print_color_centered(9, GREEN, BLACK, "Press any key to play again.");
         if let Some(_) = ctx.key {
-            self.reset();
+            // clippy suggest "if Some(ctx.key).is_some()" but it is always true?
+            let (world, resources) = Self::build();
+            self.world = world;
+            self.resources = resources;
         }
     }
 
-    fn reset(&mut self) {
-        self.world = World::default();
-        self.resources = Resources::default();
+    fn build() -> (World, Resources) {
+        let mut world = World::default();
+        let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
         let mb = MapBuilder::build(&mut rng);
-        spawn_player(&mut self.world, mb.player_start);
+        spawn_player(&mut world, mb.player_start);
 
         mb.rooms
             .iter()
             .skip(1)
             .map(|r| r.center())
-            .for_each(|pos| spawn_monster(&mut self.world, &mut rng, pos));
+            .for_each(|pos| spawn_monster(&mut world, &mut rng, pos));
 
-        self.resources.insert(mb.map);
-        self.resources.insert(Camera::new(mb.player_start));
-        self.resources.insert(TurnState::AwaitingInput);
+        resources.insert(mb.map);
+        resources.insert(Camera::new(mb.player_start));
+        resources.insert(TurnState::AwaitingInput);
+        (world, resources)
     }
 }
 
