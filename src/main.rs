@@ -59,6 +59,24 @@ impl State {
         }
     }
 
+    fn victory(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(2);
+        ctx.print_color_centered(2, GREEN, BLACK, "You have won!");
+        ctx.print_color_centered(
+            4,
+            WHITE,
+            BLACK,
+            "You put on the Amulet of YALA and feel its power course through your veins.",
+        );
+        ctx.print_color_centered(9, GREEN, BLACK, "Press 1 to play again.");
+        if let Some(VirtualKeyCode::Key1) = ctx.key {
+            // clippy suggest "if Some(ctx.key).is_some()" but it is always true?
+            let (world, resources) = Self::build();
+            self.world = world;
+            self.resources = resources;
+        }
+    }
+
     fn build() -> (World, Resources) {
         let mut world = World::default();
         let mut resources = Resources::default();
@@ -106,6 +124,9 @@ impl GameState for State {
                 .execute(&mut self.world, &mut self.resources),
             TurnState::GameOver => {
                 self.game_over(ctx);
+            }
+            TurnState::Victory => {
+                self.victory(ctx);
             }
         }
         render_draw_buffer(ctx).expect("Rendering error");
