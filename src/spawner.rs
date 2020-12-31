@@ -9,8 +9,8 @@ pub fn spawn_player(world: &mut World, pos: Point) {
             glyph: to_cp437('@'),
         },
         Health {
-            current: 20,
-            max: 20,
+            current: 90,
+            max: 90,
         },
     ));
 }
@@ -37,10 +37,23 @@ pub fn spawn_monster(world: &mut World, rng: &mut RandomNumberGenerator, pos: Po
     ));
 }
 
+pub fn spawn_amulet(world: &mut World, pos: Point) {
+    world.push((
+        Item,
+        AmuletOfYala,
+        pos,
+        Render {
+            color: ColorPair::new(WHITE, BLACK),
+            glyph: to_cp437('|'),
+        },
+        Name("Amulet of Yala".to_string()),
+    ));
+}
+
 fn goblin() -> (i32, String, FontCharType, MonsterMovementType) {
     let mut rng = RandomNumberGenerator::new();
     (
-        3,
+        1,
         "Goblin".to_string(),
         to_cp437('g'),
         match rng.roll_dice(1, 6) {
@@ -52,7 +65,7 @@ fn goblin() -> (i32, String, FontCharType, MonsterMovementType) {
 
 fn orc() -> (i32, String, FontCharType, MonsterMovementType) {
     (
-        7,
+        3,
         "Orc".to_string(),
         to_cp437('o'),
         MonsterMovementType::Chasing,

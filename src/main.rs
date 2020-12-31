@@ -65,6 +65,7 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let mb = MapBuilder::build(&mut rng);
         spawn_player(&mut world, mb.player_start);
+        spawn_amulet(&mut world, mb.amulet_start);
 
         mb.rooms
             .iter()
