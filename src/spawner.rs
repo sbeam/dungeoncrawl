@@ -12,6 +12,7 @@ pub fn spawn_player(world: &mut World, pos: Point) {
             current: 90,
             max: 90,
         },
+        FieldOfView::new(8),
     ));
 }
 
@@ -34,6 +35,7 @@ pub fn spawn_monster(world: &mut World, rng: &mut RandomNumberGenerator, pos: Po
             max: hp,
         },
         Name(name),
+        FieldOfView::new(6),
     ));
 }
 
