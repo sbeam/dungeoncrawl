@@ -84,12 +84,10 @@ impl State {
         let mb = MapBuilder::build(&mut rng);
         spawn_player(&mut world, mb.player_start);
         spawn_amulet(&mut world, mb.amulet_start);
-
-        mb.rooms
+        mb.monster_spawns
             .iter()
-            .skip(1)
-            .map(|r| r.center())
-            .for_each(|pos| spawn_monster(&mut world, &mut rng, pos));
+            .for_each(|pos| spawn_monster(&mut world, &mut rng, *pos));
+
 
         resources.insert(mb.map);
         resources.insert(Camera::new(mb.player_start));

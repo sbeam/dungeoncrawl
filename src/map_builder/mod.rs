@@ -1,11 +1,19 @@
 use crate::prelude::*;
+mod empty;
+use empty::EmptyArchitect;
+
 const NUM_ROOMS: usize = 20;
+
+trait MapArchitect {
+    fn build(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
+}
 
 pub struct MapBuilder {
     pub map: Map,
     pub player_start: Point,
     pub rooms: Vec<Rect>,
     pub amulet_start: Point,
+    pub monster_spawns: Vec<Point>,
 }
 
 impl MapBuilder {
@@ -76,36 +84,23 @@ impl MapBuilder {
         }
     }
 
-    pub fn build(rng: &mut RandomNumberGenerator) -> Self {
-        let mut mb = MapBuilder {
-            map: Map::new(),
-            rooms: Vec::new(),
-            player_start: Point::zero(),
-            amulet_start: Point::zero(),
-        };
-
-        mb.fill(TileType::Wall);
-        mb.build_random_rooms(rng);
-        mb.build_corridors(rng);
-        mb.player_start = mb.rooms[0].center();
-
+    pub fn find_most_distant(&self) -> Point {
         let dijkstra_map = DijkstraMap::new(
             SCREEN_WIDTH,
-            SCREEN_HEIGHT,
-            &[mb.map.point2d_to_index(mb.player_start)],
-            &mb.map,
-            1024.0,
+            SCREEN_HEIGHT, &vec![self.map.point2d_to_index(self.player_start)], &self.map,
+            1024.0
         );
-        let amulet_pos = dijkstra_map
-            .map
-            .iter()
-            .enumerate()
-            .filter(|(_, dist)| *dist < &std::f32::MAX)
-            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-            .unwrap();
-        mb.amulet_start = mb.map.index_to_point2d(amulet_pos.0);
-        println!("amulet {:?}", mb.amulet_start);
+        self.map.index_to_point2d(
+            dijkstra_map.map .iter()
+                .enumerate()
+                .filter(|(_,dist)| *dist < &std::f32::MAX) 
+                .max_by(|a,b| a.1.partial_cmp(b.1).unwrap()) 
+                .unwrap().0
+        )
+    }
 
-        mb
+    pub fn build(rng: &mut RandomNumberGenerator) -> Self {
+        let mut architect = EmptyArchitect{};
+        architect.build(rng)
     }
 }
