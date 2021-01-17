@@ -88,7 +88,6 @@ impl State {
             .iter()
             .for_each(|pos| spawn_monster(&mut world, &mut rng, *pos));
 
-
         resources.insert(mb.map);
         resources.insert(Camera::new(mb.player_start));
         resources.insert(TurnState::AwaitingInput);

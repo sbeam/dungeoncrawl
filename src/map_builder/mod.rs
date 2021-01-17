@@ -1,6 +1,8 @@
 use crate::prelude::*;
 mod empty;
-use empty::EmptyArchitect;
+mod rooms;
+// use empty::EmptyArchitect;
+use rooms::RoomsArchitect;
 
 const NUM_ROOMS: usize = 20;
 
@@ -87,20 +89,25 @@ impl MapBuilder {
     pub fn find_most_distant(&self) -> Point {
         let dijkstra_map = DijkstraMap::new(
             SCREEN_WIDTH,
-            SCREEN_HEIGHT, &vec![self.map.point2d_to_index(self.player_start)], &self.map,
-            1024.0
+            SCREEN_HEIGHT,
+            &vec![self.map.point2d_to_index(self.player_start)],
+            &self.map,
+            1024.0,
         );
         self.map.index_to_point2d(
-            dijkstra_map.map .iter()
+            dijkstra_map
+                .map
+                .iter()
                 .enumerate()
-                .filter(|(_,dist)| *dist < &std::f32::MAX) 
-                .max_by(|a,b| a.1.partial_cmp(b.1).unwrap()) 
-                .unwrap().0
+                .filter(|(_, dist)| *dist < &std::f32::MAX)
+                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                .unwrap()
+                .0,
         )
     }
 
     pub fn build(rng: &mut RandomNumberGenerator) -> Self {
-        let mut architect = EmptyArchitect{};
+        let mut architect = RoomsArchitect {};
         architect.build(rng)
     }
 }
