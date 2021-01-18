@@ -1,26 +1,29 @@
-use crate::prelude::*;
 use super::MapArchitect;
+use crate::prelude::*;
 
 const STAGGER_DISTANCE: usize = 400;
-const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize; 
-const DESIRED_FLOOR : usize = NUM_TILES / 3;
+const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
+const DESIRED_FLOOR: usize = NUM_TILES / 3;
 
-pub struct DrunkardsWalkArchitect {
-}
+pub struct DrunkardsWalkArchitect {}
 
 impl MapArchitect for DrunkardsWalkArchitect {
     fn build(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
         let mut mb = MapBuilder::new();
         mb.fill(TileType::Wall);
-        let center = Point::new(SCREEN_WIDTH /2, SCREEN_HEIGHT/2);
-        while mb.map.tiles.iter().filter(|t| **t == TileType::Floor).count() < DESIRED_FLOOR {
+        let center = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+        while mb
+            .map
+            .tiles
+            .iter()
+            .filter(|t| **t == TileType::Floor)
+            .count()
+            < DESIRED_FLOOR
+        {
             self.drunkard(
-                &Point::new(
-                    rng.range(0, SCREEN_WIDTH),
-                    rng.range(0, SCREEN_HEIGHT),
-                ),
+                &Point::new(rng.range(0, SCREEN_WIDTH), rng.range(0, SCREEN_HEIGHT)),
                 rng,
-                &mut mb.map
+                &mut mb.map,
             );
             let dijkstra_map = DijkstraMap::new(
                 SCREEN_WIDTH,
@@ -29,7 +32,10 @@ impl MapArchitect for DrunkardsWalkArchitect {
                 &mb.map,
                 1024.0,
             );
-            dijkstra_map.map.iter().enumerate()
+            dijkstra_map
+                .map
+                .iter()
+                .enumerate()
                 .filter(|(_, distance)| *distance > &2000.0)
                 .for_each(|(idx, _)| mb.map.tiles[idx] = TileType::Wall);
         }
@@ -55,10 +61,14 @@ impl DrunkardsWalkArchitect {
                 2 => pos.y -= 1,
                 _ => pos.y += 1,
             }
-            if !map.in_bounds(pos) { break; }
+            if !map.in_bounds(pos) {
+                break;
+            }
 
             staggered += 1;
-            if staggered > STAGGER_DISTANCE { break; }
+            if staggered > STAGGER_DISTANCE {
+                break;
+            }
         }
     }
 }
