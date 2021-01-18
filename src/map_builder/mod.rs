@@ -2,9 +2,11 @@ use crate::prelude::*;
 mod automata;
 mod empty;
 mod rooms;
+mod drunkard;
 // use empty::EmptyArchitect;
 // use rooms::RoomsArchitect;
-use automata::CellularAutomataArchitect;
+// use automata::CellularAutomataArchitect;
+use drunkard::DrunkardsWalkArchitect;
 
 const NUM_ROOMS: usize = 20;
 
@@ -21,6 +23,11 @@ pub struct MapBuilder {
 }
 
 impl MapBuilder {
+    pub fn build(rng: &mut RandomNumberGenerator) -> Self {
+        let mut architect = DrunkardsWalkArchitect{};
+        architect.build(rng)
+    }
+
     fn fill(&mut self, tile: TileType) {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
     }
@@ -106,11 +113,6 @@ impl MapBuilder {
                 .unwrap()
                 .0,
         )
-    }
-
-    pub fn build(rng: &mut RandomNumberGenerator) -> Self {
-        let mut architect = CellularAutomataArchitect {};
-        architect.build(rng)
     }
 
     fn spawn_monsters(&self, start: &Point, rng: &mut RandomNumberGenerator) -> Vec<Point> {
