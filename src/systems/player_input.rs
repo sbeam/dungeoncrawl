@@ -25,6 +25,7 @@ pub fn player_input(
             .iter(world)
             .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
             .unwrap();
+        println!("moving to {:?}", destination);
 
         let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
 
