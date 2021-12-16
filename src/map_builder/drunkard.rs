@@ -9,6 +9,7 @@ pub struct DrunkardsWalkArchitect {}
 
 impl MapArchitect for DrunkardsWalkArchitect {
     fn build(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
+        println!("Using DrunkardsWalkArchitect");
         let mut mb = MapBuilder::new();
         mb.fill(TileType::Wall);
         let center = Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);

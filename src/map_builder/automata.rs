@@ -5,6 +5,7 @@ pub struct CellularAutomataArchitect {}
 
 impl MapArchitect for CellularAutomataArchitect {
     fn build(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
+        println!("Using CellularAutomataArchitect");
         let mut mb = MapBuilder::new();
         self.random_noise_map(rng, &mut mb.map);
         for _ in 0..10 {
