@@ -7,7 +7,7 @@ pub fn map_render(
     world: &SubWorld, 
     #[resource] map: &Map, 
     #[resource] camera: &Camera,
-    #[resource] theme: &Box<dyn MapTheme>,
+    #[resource] theme: &dyn MapTheme,
 ) {
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
     let player_fov = fov.iter(world).next().unwrap();
