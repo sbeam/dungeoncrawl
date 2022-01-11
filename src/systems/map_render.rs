@@ -7,7 +7,7 @@ pub fn map_render(
     world: &SubWorld, 
     #[resource] map: &Map, 
     #[resource] camera: &Camera,
-    #[resource] theme: &dyn MapTheme,
+    #[resource] theme: &Box<dyn MapTheme> // " the `read_resource` method cannot be invoked on a trait object" if Clippy is respected here?
 ) {
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
     let player_fov = fov.iter(world).next().unwrap();

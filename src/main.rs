@@ -86,7 +86,7 @@ impl State {
         spawn_amulet(&mut world, mb.amulet_start);
         mb.monster_spawns
             .iter()
-            .for_each(|pos| spawn_monster(&mut world, &mut rng, *pos));
+            .for_each(|pos| spawn_entity(&mut world, &mut rng, *pos));
 
         resources.insert(mb.map);
         resources.insert(Camera::new(mb.player_start));
