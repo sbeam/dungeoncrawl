@@ -77,13 +77,74 @@ impl State {
         }
     }
 
+    fn advance_level(&mut self) {
+        let player_entity = *<Entity>::query()
+            .filter(component::<Player>())
+            .iter(&mut self.world)
+            .nth(0)
+            .unwrap();
+        use std::collections::HashSet;
+        let mut entities_to_keep = HashSet::new();
+        entities_to_keep.insert(player_entity);
+
+        <(Entity, &Carried)>::query()
+            .iter(&self.world)
+            .filter(|(_e, item)| item.0 == player_entity)
+            .map(|(e, _)| *e)
+            .for_each(|e| {
+                entities_to_keep.insert(e);
+            });
+
+        let mut cb = CommandBuffer::new(&self.world);
+        for e in Entity::query().iter(&self.world) {
+            if !entities_to_keep.contains(e) {
+                cb.remove(*e);
+            }
+        }
+        cb.flush(&mut self.world);
+
+        <&mut FieldOfView>::query()
+            .iter_mut(&mut self.world)
+            .for_each(|fov| fov.is_dirty = true);
+
+        let mut rng = RandomNumberGenerator::new();
+        let mut mb = MapBuilder::build(&mut rng);
+
+        let mut map_level = 0;
+        <(&mut Player, &mut Point)>::query()
+            .iter_mut(&mut self.world)
+            .for_each(|(player, pos)| {
+                player.map_level += 1;
+                map_level = player.map_level;
+                pos.x = mb.player_start.x;
+                pos.y = mb.player_start.y;
+            });
+
+        if map_level == 2 {
+            spawn_amulet(&mut self.world, mb.amulet_start);
+        } else {
+            let exit_idx = mb.map.point2d_to_index(mb.amulet_start);
+            mb.map.tiles[exit_idx] = TileType::Exit;
+            mb.monster_spawns
+                .iter()
+                .for_each(|pos| spawn_entity(&mut self.world, &mut rng, *pos));
+
+            self.resources.insert(mb.map);
+            self.resources.insert(Camera::new(mb.player_start));
+            self.resources.insert(TurnState::AwaitingInput);
+            self.resources.insert(mb.theme);
+        }
+    }
+
     fn build() -> (World, Resources) {
         let mut world = World::default();
         let mut resources = Resources::default();
         let mut rng = RandomNumberGenerator::new();
-        let mb = MapBuilder::build(&mut rng);
+        let mut mb = MapBuilder::build(&mut rng);
         spawn_player(&mut world, mb.player_start);
-        spawn_amulet(&mut world, mb.amulet_start);
+        // spawn_amulet(&mut world, mb.amulet_start);
+        let exit_idx = mb.map.point2d_to_index(mb.amulet_start);
+        mb.map.tiles[exit_idx] = TileType::Exit;
         mb.monster_spawns
             .iter()
             .for_each(|pos| spawn_entity(&mut world, &mut rng, *pos));
@@ -120,6 +181,9 @@ impl GameState for State {
             TurnState::MonsterTurn => self
                 .monster_systems
                 .execute(&mut self.world, &mut self.resources),
+            TurnState::NextLevel => {
+                self.advance_level();
+            }
             TurnState::GameOver => {
                 self.game_over(ctx);
             }
